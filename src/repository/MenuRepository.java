@@ -1,6 +1,5 @@
 package repository;
 
-import com.sun.xml.internal.ws.util.xml.ContentHandlerToXMLStreamWriter;
 import domain.Plate;
 
 import java.sql.Connection;
@@ -25,17 +24,19 @@ public class MenuRepository {
     private Connection makeJDBCConnection() {
         Connection connection;
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/rentsystemclass?serverTimezone=UTC", "root", "root");
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mysql?autoReconnect=true&useSSL=false", "root", "shakhtar");
             if (connection != null) {
                 log("Connection Successful! Enjoy. Now it's time to push data");
             } else {
                 log("Failed to make connection!");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log("MySQL Connection Failed!");
             e.printStackTrace();
             return null;
         }
+
         return connection;
     }
 
@@ -70,7 +71,7 @@ public class MenuRepository {
         Connection connection = makeJDBCConnection();
 
         try{
-            String sql = "UPDATE plates set name = ?, type = ?, drink = ?, idListIngridients = ? WHERE plates.id = ?";
+            String sql = "UPDATE plates set name = ?, type = ?, drink = ?, idListIngridients = ? WHERE plates.PlatesId = ?";
 
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
@@ -147,7 +148,7 @@ public class MenuRepository {
                     .executeQuery("SELECT * FROM plates");
 
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
+                int id = resultSet.getInt("PlateId");
                 String name = resultSet.getString("name");
                 String type = resultSet.getString("type");
                 String drink = resultSet.getString("drink");
